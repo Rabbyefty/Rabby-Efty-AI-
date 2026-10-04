@@ -1,0 +1,9 @@
+{
+  "name": "Copy of Creative Suite 2026",
+  "description": "A comprehensive AI suite featuring conversational voice, video generation with Veo, advanced image editing and generation, and deep reasoning capabilities.",
+  "requestFramePermissions": [
+    "microphone",
+    "camera"
+  ],
+  "majorCapabilities": []
+}

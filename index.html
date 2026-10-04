@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+<html lang="en" class="h-full w-full dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Gemini Suite">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/128/emoji_u2728.png">
+    
+    <title>Gemini Creative Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            animation: {
+              'spin-slow': 'spin 3s linear infinite',
+              'bounce-slow': 'bounce 3s infinite',
+            }
+          }
+        }
+      }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+      
+      :root {
+        --bg-color: #f8fafc;
+        --text-color: #0f172a;
+        --glass-bg: rgba(255, 255, 255, 0.65);
+        --glass-border: rgba(0, 0, 0, 0.08);
+        --glass-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        --input-bg: rgba(255, 255, 255, 0.5);
+        --input-focus-bg: rgba(255, 255, 255, 0.8);
+      }
+
+      html.dark {
+        --bg-color: #000000;
+        --text-color: #ffffff;
+        --glass-bg: rgba(15, 15, 18, 0.6);
+        --glass-border: rgba(255, 255, 255, 0.12);
+        --glass-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        --input-bg: rgba(0, 0, 0, 0.3);
+        --input-focus-bg: rgba(0, 0, 0, 0.5);
+      }
+      
+      html, body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: var(--bg-color);
+        transition: background-color 0.5s ease;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        color: var(--text-color);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+      }
+
+      /* Mesh Background */
+      .mesh-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        background: radial-gradient(at 0% 0%, rgba(219, 234, 254, 0.5) 0, transparent 50%),
+                    radial-gradient(at 100% 0%, rgba(224, 231, 255, 0.5) 0, transparent 50%),
+                    radial-gradient(at 50% 100%, rgba(237, 233, 254, 0.5) 0, transparent 50%);
+        background-size: 200% 200%;
+        animation: premium-gradient 20s ease-in-out infinite alternate;
+        transition: opacity 0.5s ease;
+      }
+
+      html.dark .mesh-bg {
+        background: 
+          radial-gradient(at 0% 0%, hsla(250, 40%, 10%, 1) 0, transparent 50%),
+          radial-gradient(at 100% 0%, hsla(220, 50%, 15%, 1) 0, transparent 50%),
+          radial-gradient(at 50% 100%, hsla(280, 40%, 8%, 1) 0, transparent 50%);
+      }
+      
+      .mesh-bg::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 70% 30%, rgba(56, 189, 248, 0.05) 0%, transparent 50%),
+                    radial-gradient(circle at 20% 80%, rgba(168, 85, 247, 0.05) 0%, transparent 50%);
+        filter: blur(100px);
+      }
+
+      @keyframes premium-gradient {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 100% 100%; }
+      }
+
+      /* Glass Effect using Variables */
+      .glass-panel {
+        background: var(--glass-bg);
+        backdrop-filter: blur(60px) saturate(200%);
+        -webkit-backdrop-filter: blur(60px) saturate(200%);
+        border: 1px solid var(--glass-border);
+        box-shadow: 
+          var(--glass-shadow),
+          inset 0 1px 1px rgba(255, 255, 255, 0.08);
+        border-radius: 2.5rem;
+        transition: background 0.3s ease, border-color 0.3s ease;
+      }
+      
+      .glass-button {
+        background: rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(30px) saturate(160%);
+        -webkit-backdrop-filter: blur(30px) saturate(160%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        color: inherit;
+      }
+      
+      html.dark .glass-button {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        color: #ffffff;
+      }
+
+      .glass-button:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+      
+      html.dark .glass-button:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      .glass-input {
+        background: var(--input-bg);
+        backdrop-filter: blur(30px);
+        border: 1px solid var(--glass-border);
+        transition: all 0.3s ease;
+        color: var(--text-color);
+      }
+
+      .glass-input:focus {
+        background: var(--input-focus-bg);
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+      }
+      
+      html.dark .glass-input:focus {
+        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.03);
+      }
+
+      /* Animations */
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      .animate-fade-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+      @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+      .animate-slide-up { animation: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+      @keyframes scaleIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+      .animate-scale-in { animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+      /* Custom scrollbar */
+      ::-webkit-scrollbar { width: 5px; height: 5px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.5); border-radius: 10px; }
+      ::-webkit-scrollbar-thumb:hover { background: rgba(156, 163, 175, 0.8); }
+      
+      html.dark ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); }
+      html.dark ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.25); }
+      
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.37.0",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "react-markdown": "https://esm.sh/react-markdown@^10.1.0",
+    "prismjs": "https://esm.sh/prismjs@1.29.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div class="mesh-bg"></div>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
