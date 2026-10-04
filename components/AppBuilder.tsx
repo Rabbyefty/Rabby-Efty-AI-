@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI } from '../utils/gemini-client';
 import Prism from 'prismjs';
 import { 
   Code2, 
@@ -350,7 +350,7 @@ export const AppBuilder: React.FC<AppBuilderProps> = ({ goHome }) => {
     setLoading(true);
     setViewMode('preview');
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI();
       
       const systemInstruction = `You are a world-class senior frontend engineer and mobile app architect. 
       Output ONLY the complete HTML code. 

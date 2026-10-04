@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI } from '../utils/gemini-client';
 import { 
   Users, 
   Instagram, 
@@ -99,7 +99,7 @@ export const SocialStudio: React.FC<SocialStudioProps> = ({ goHome }) => {
     }
 
     try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const ai = new GoogleGenAI();
         const response = await ai.models.generateContent({
             model: 'gemini-3-flash-preview',
             contents: [{ text: `
@@ -146,7 +146,7 @@ export const SocialStudio: React.FC<SocialStudioProps> = ({ goHome }) => {
     }
 
     try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const ai = new GoogleGenAI();
         const response = await ai.models.generateContent({
             model: 'gemini-3-flash-preview',
             contents: [{ text: `
@@ -196,7 +196,7 @@ export const SocialStudio: React.FC<SocialStudioProps> = ({ goHome }) => {
     }
 
     try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const ai = new GoogleGenAI();
         const response = await ai.models.generateContent({
             model: 'gemini-3-flash-preview',
             contents: [{ text: `
@@ -243,7 +243,7 @@ export const SocialStudio: React.FC<SocialStudioProps> = ({ goHome }) => {
       }
 
       try {
-          const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+          const ai = new GoogleGenAI();
           const response = await ai.models.generateContent({
               model: 'gemini-3-flash-preview',
               contents: [{ text: `
@@ -289,7 +289,7 @@ export const SocialStudio: React.FC<SocialStudioProps> = ({ goHome }) => {
       }
 
       try {
-          const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+          const ai = new GoogleGenAI();
           const response = await ai.models.generateContent({
               model: 'gemini-3-flash-preview',
               contents: [{ text: `
@@ -335,7 +335,7 @@ export const SocialStudio: React.FC<SocialStudioProps> = ({ goHome }) => {
     }
 
     try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const ai = new GoogleGenAI();
         const response = await ai.models.generateContent({
             model: 'gemini-3-pro-preview',
             contents: [{ text: `
@@ -371,7 +371,7 @@ export const SocialStudio: React.FC<SocialStudioProps> = ({ goHome }) => {
       setResult(null);
       
       try {
-          const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+          const ai = new GoogleGenAI();
           let parts: any[] = [];
           
           if(captionImage) {

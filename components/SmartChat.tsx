@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenAI, Modality, LiveServerMessage } from '@google/genai';
+import { GoogleGenAI, Modality, LiveServerMessage } from '../utils/gemini-client';
 import { 
   Send, 
   User, 
@@ -126,9 +126,9 @@ export const SmartChat: React.FC<SmartChatProps> = ({ onViewChange }) => {
       const ctx = new AudioCtx({ sampleRate: 16000 });
       recordingContextRef.current = ctx;
 
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI();
       const sessionPromise = ai.live.connect({
-        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
+        model: 'gemini-3.8-live',
         config: {
           responseModalities: [Modality.AUDIO],
           inputAudioTranscription: {},
@@ -200,9 +200,9 @@ export const SmartChat: React.FC<SmartChatProps> = ({ onViewChange }) => {
     stopAudioPlayback();
     try {
       setPlayingMessageId(id);
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI();
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-preview-tts',
+        model: 'gemini-3.8-flash-lite-tts',
         contents: { parts: [{ text }] },
         config: {
           responseModalities: [Modality.AUDIO],
@@ -227,9 +227,9 @@ export const SmartChat: React.FC<SmartChatProps> = ({ onViewChange }) => {
   const downloadMessageAudio = async (text: string, id: number) => {
     if (!text) return;
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI();
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-preview-tts',
+        model: 'gemini-3.8-flash-lite-tts',
         contents: { parts: [{ text }] },
         config: {
           responseModalities: [Modality.AUDIO],
@@ -261,8 +261,8 @@ export const SmartChat: React.FC<SmartChatProps> = ({ onViewChange }) => {
     setMessages(prev => [...prev, { role: 'user', text: userMsg, attachment: currentAttachment || undefined }]);
     
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const model = mode === 'fast' ? 'gemini-3-flash-preview' : 'gemini-3-pro-preview';
+      const ai = new GoogleGenAI();
+      const model = mode === 'fast' ? 'gemini-3.8-flash' : 'gemini-3.1-pro-preview';
       
       // Configure tools: Pro and Thinking mode get Search Grounding
       const tools: any[] = (mode === 'pro' || mode === 'thinking') ? [{ googleSearch: {} }] : [];
@@ -361,7 +361,9 @@ export const SmartChat: React.FC<SmartChatProps> = ({ onViewChange }) => {
                     {m.attachment.type === 'image' ? <img src={m.attachment.previewUrl} className="rounded-2xl border border-white/10 shadow-lg max-h-80 object-cover" /> : <div className="flex items-center gap-3 p-4 bg-black/50 rounded-2xl border border-white/5"><FileText size={24} className="text-blue-400" /><p className="text-sm font-semibold truncate text-white/80">{m.attachment.name}</p></div>}
                   </div>
                 )}
-                <ReactMarkdown className="prose prose-invert prose-sm max-w-none leading-relaxed font-light">{m.text}</ReactMarkdown>
+                <div className="prose prose-invert prose-sm max-w-none leading-relaxed font-light">
+                  <ReactMarkdown>{m.text}</ReactMarkdown>
+                </div>
                 
                 {m.sources && m.sources.length > 0 && (
                   <div className="mt-6 pt-6 border-t border-white/5 space-y-3">

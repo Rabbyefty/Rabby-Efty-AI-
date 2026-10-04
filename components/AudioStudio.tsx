@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenAI, Modality } from '@google/genai';
+import { GoogleGenAI, Modality } from '../utils/gemini-client';
 import { 
   Mic, 
   Play, 
@@ -127,7 +127,7 @@ export const AudioStudio: React.FC = () => {
     setTtsLoading(true);
     
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI();
       
       let finalVoice = voiceName;
       let systemInstruction = "Speak naturally.";
@@ -177,7 +177,7 @@ export const AudioStudio: React.FC = () => {
     setCloningProgress(10);
     
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI();
       const reader = new FileReader();
       
       const fileBase64 = await new Promise<string>((resolve) => {
@@ -248,7 +248,7 @@ export const AudioStudio: React.FC = () => {
   const transcribeAudio = async (base64Audio: string) => {
     setTranscribeLoading(true);
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI();
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: {
@@ -274,7 +274,7 @@ export const AudioStudio: React.FC = () => {
     setPodcastStatus('Drafting Script...');
     setLastAudio(null);
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI();
       const scriptResponse = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: [{ text: `Create a short podcast dialogue script about: ${podcastTopic}` }]

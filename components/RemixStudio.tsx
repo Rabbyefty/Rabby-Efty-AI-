@@ -1,7 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import { GoogleGenAI } from '@google/genai';
-import { ensureApiKeySelected } from '../utils/key-selection';
+import { GoogleGenAI } from '../utils/gemini-client';
 import { 
   Layers, 
   Upload, 
@@ -93,11 +92,11 @@ export const RemixStudio: React.FC = () => {
       } else {
           // For Image, we can actually try to use Gemini to "Re-imagine" it at high res
           try {
-              const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+              const ai = new GoogleGenAI();
               const base64 = await fileToBase64(enhanceFile);
               
               const response = await ai.models.generateContent({
-                  model: 'gemini-2.5-flash-image',
+                  model: 'gemini-3.1-flash-image',
                   contents: {
                       parts: [
                           { inlineData: { mimeType: enhanceFile.type, data: base64.split(',')[1] } },
@@ -156,10 +155,10 @@ export const RemixStudio: React.FC = () => {
       } else {
           // Image Swap via Gemini
           try {
-              const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+              const ai = new GoogleGenAI();
               
               const response = await ai.models.generateContent({
-                  model: 'gemini-2.5-flash-image',
+                  model: 'gemini-3.1-flash-image',
                   contents: {
                       parts: [
                           { inlineData: { mimeType: 'image/png', data: sourceFace.split(',')[1] } },
@@ -317,7 +316,7 @@ export const RemixStudio: React.FC = () => {
                                             <div className="h-full bg-cyan-400 animate-progress" style={{ width: `${logs.length * 20}%` }} />
                                         </div>
                                         <div className="h-32 p-4 rounded-xl bg-black/50 border border-white/5 font-mono text-[10px] text-emerald-400/80 overflow-hidden flex flex-col justify-end">
-                                            {logs.map((l, i) => <div key={i} className="truncate">> {l}</div>)}
+                                            {logs.map((l, i) => <div key={i} className="truncate">&gt; {l}</div>)}
                                         </div>
                                     </div>
                                 ) : (

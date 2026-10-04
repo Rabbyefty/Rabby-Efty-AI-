@@ -1,7 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenAI } from '@google/genai';
-import { ensureApiKeySelected } from '../utils/key-selection';
+import { GoogleGenAI } from '../utils/gemini-client';
 import { Image as ImageIcon, Wand, Eraser, Download, Loader2, Maximize2, Sparkles, ImagePlus, Upload, Palette, Trash2, Camera, Dice5, X, Crown, Square, Monitor, Smartphone } from 'lucide-react';
 
 type Mode = 'generate' | 'pro' | 'edit';
@@ -54,7 +53,7 @@ export const ImageStudio: React.FC = () => {
   const handleSurpriseMe = async () => {
     setPromptLoading(true);
     try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const ai = new GoogleGenAI();
         const response = await ai.models.generateContent({
             model: 'gemini-3-flash-preview',
             contents: { parts: [{ text: "Write a highly detailed, creative, and visually striking image generation prompt for an AI art generator. Keep it under 50 words. Do not include any intro text." }] }
@@ -74,12 +73,9 @@ export const ImageStudio: React.FC = () => {
     setGenLoading(true);
     setGeneratedImage(null);
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI();
 
       if (genModel.startsWith('imagen')) {
-         const hasKey = await ensureApiKeySelected();
-         if (!hasKey) return;
-
          // Imagen Models use generateImages
          const response = await ai.models.generateImages({
              model: genModel,
@@ -101,12 +97,6 @@ export const ImageStudio: React.FC = () => {
       } else {
         // Gemini Models use generateContent
         
-        // For Gemini 3 Pro in standard tab, ensure key
-        if (genModel === 'gemini-3-pro-image-preview') {
-            const hasKey = await ensureApiKeySelected();
-            if (!hasKey) return;
-        }
-
         const config: any = {
             imageConfig: {
                 aspectRatio: aspectRatio,
@@ -147,16 +137,12 @@ export const ImageStudio: React.FC = () => {
 
   const handleProGen = async () => {
       if (!proPrompt) return;
-      
-      // Strict Key Check for Pro Model
-      const hasKey = await ensureApiKeySelected();
-      if (!hasKey) return;
 
       setProLoading(true);
       setProImage(null);
 
       try {
-          const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+          const ai = new GoogleGenAI();
           const response = await ai.models.generateContent({
               model: 'gemini-3-pro-image-preview',
               contents: { parts: [{ text: proPrompt }] },
@@ -191,7 +177,7 @@ export const ImageStudio: React.FC = () => {
     setEditLoading(true);
     setEditedImage(null);
     try {
-       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+       const ai = new GoogleGenAI();
        // Using Nano Banana (Gemini 2.5 Flash Image) for editing
        const response = await ai.models.generateContent({
            model: 'gemini-2.5-flash-image',

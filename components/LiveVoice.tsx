@@ -1,7 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
-import { ensureApiKeySelected } from '../utils/key-selection';
+import { GoogleGenAI, LiveServerMessage, Modality } from '../utils/gemini-client';
 import { createPcmBlob, decodeAudioData, base64ToUint8Array, pcmToWav, downloadBlob } from '../utils/audio';
 import { 
   PhoneOff, 
@@ -330,11 +329,9 @@ export const LiveVoice: React.FC = () => {
 
   const startSession = async () => {
     try {
-      const hasKey = await ensureApiKeySelected();
-      if (!hasKey) return;
       setStatus('connecting'); setErrorMessage('');
       
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI();
       const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
       const inputCtx = new AudioCtx({ sampleRate: 16000 });
       const outputCtx = new AudioCtx({ sampleRate: 24000 });
@@ -356,7 +353,7 @@ export const LiveVoice: React.FC = () => {
       streamRef.current = stream;
 
       const sessionPromise = ai.live.connect({
-        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
+        model: 'gemini-3.8-live',
         callbacks: {
           onopen: () => {
             setStatus('connected'); setActive(true);
@@ -430,9 +427,9 @@ export const LiveVoice: React.FC = () => {
     if (downloadingVoice) return;
     setDownloadingVoice(vName);
     try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const ai = new GoogleGenAI();
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash-preview-tts',
+            model: 'gemini-3.8-flash-lite-tts',
             contents: { parts: [{ text: `Hello, I am ${vName}.` }] },
             config: { responseModalities: [Modality.AUDIO], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: vName } } } }
         });

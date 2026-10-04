@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI } from '../utils/gemini-client';
 import { CreditCard, RefreshCw, Copy, ShieldCheck, Loader2, Wallet, Globe, Lock, Check } from 'lucide-react';
 
 export const CreditCardGenerator: React.FC = () => {
@@ -11,7 +11,7 @@ export const CreditCardGenerator: React.FC = () => {
   const handleGenerate = async () => {
     setLoading(true);
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI();
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: [{ text: "Generate a realistic mock credit card profile for software testing purposes. Return ONLY a valid JSON object with the following keys: network (Visa, Mastercard, or Amex), number (formatted with spaces, passing Luhn check but mock IIN), expiry (MM/YY, future date), cvv (3 or 4 digits), name (full name), balance (random amount string like '$5,000'), address (short billing address), country. Do not include markdown formatting." }]

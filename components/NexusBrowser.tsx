@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI } from '../utils/gemini-client';
 import { 
   Globe, 
   Search, 
@@ -184,7 +184,7 @@ export const NexusBrowser: React.FC<NexusBrowserProps> = ({ goHome }) => {
     }
 
     try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const ai = new GoogleGenAI();
         let prompt = '';
         
         if (mode === 'unlock') {
@@ -227,7 +227,7 @@ export const NexusBrowser: React.FC<NexusBrowserProps> = ({ goHome }) => {
         const response = await fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`);
         const text = await response.text();
         
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const ai = new GoogleGenAI();
         const geminiRes = await ai.models.generateContent({
             model: 'gemini-3-flash-preview',
             contents: [{ text: `

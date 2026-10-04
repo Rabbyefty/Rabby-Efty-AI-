@@ -1,7 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenAI } from '@google/genai';
-import { ensureApiKeySelected } from '../utils/key-selection';
+import { GoogleGenAI, fetchVideoBlob } from '../utils/gemini-client';
 import { Video, FileVideo, Upload, Loader2, Sparkles, Scissors, Wand2, Undo, Redo, Download, Film, Aperture, X, Sun, Contrast, Droplets, ChevronDown, Volume2, VolumeX, Zap, Crown, Maximize2, Palette, Gauge, Image as ImageIcon } from 'lucide-react';
 
 type Mode = 'generate' | 'analyze' | 'edit' | 'enhance';
@@ -93,7 +92,7 @@ export const VideoStudio: React.FC = () => {
     if (!prompt) return;
     setIsEnhancing(true);
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI();
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: { parts: [{ text: `Rewrite this video prompt to be more descriptive, cinematic, and detailed for an AI video generator (Veo). Keep it under 60 words. Prompt: "${prompt}"` }] }
@@ -108,17 +107,14 @@ export const VideoStudio: React.FC = () => {
 
   const handleGenerate = async () => {
     if (!prompt && !startImage) return;
-    
-    const hasKey = await ensureApiKeySelected();
-    if (!hasKey) return;
 
     setGenLoading(true);
     setGenStatus('Initializing Veo Model...');
     setGeneratedVideoUrl(null);
 
     try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        let operation;
+        const ai = new GoogleGenAI();
+        let operation: any;
         
         if (startImage) {
              const mimeType = startImage.split(';')[0].split(':')[1] || 'image/png';
@@ -159,12 +155,9 @@ export const VideoStudio: React.FC = () => {
             }
         }
 
-        const videoUri = operation.response?.generatedVideos?.[0]?.video?.uri;
-        if (videoUri) {
+        if (operation.name) {
             setGenStatus('Finalizing download...');
-            const vidRes = await fetch(`${videoUri}&key=${process.env.API_KEY}`);
-            if (!vidRes.ok) throw new Error(`Failed to fetch video: ${vidRes.statusText}`);
-            const blob = await vidRes.blob();
+            const blob = await fetchVideoBlob(operation.name);
             const url = URL.createObjectURL(blob);
             setGeneratedVideoUrl(url);
         } else {
@@ -219,7 +212,7 @@ export const VideoStudio: React.FC = () => {
       setAnalyzeResult('');
       
       try {
-          const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+          const ai = new GoogleGenAI();
           const base64 = await fileToBase64(analyzeFile);
           
           const response = await ai.models.generateContent({
@@ -260,7 +253,7 @@ export const VideoStudio: React.FC = () => {
           const frameBase64 = captureVideoFrame(enhanceVideoRef.current);
           if (!frameBase64) throw new Error("Could not capture frame");
 
-          const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+          const ai = new GoogleGenAI();
           
           let prompt = "";
           if (type === 'auto') {
@@ -856,11 +849,10 @@ export const VideoStudio: React.FC = () => {
                          {editSrc ? (
                              <video 
                                 src={editSrc} 
-                                ref={(el) => setVideoRef(el)}
+                                ref={(el) => { setVideoRef(el); if (el) el.volume = volume; }}
                                 onLoadedMetadata={handleLoadedMetadata}
                                 className="w-full h-full object-contain" 
                                 controls 
-                                volume={volume}
                                 muted={isMuted}
                                 style={{ filter: `${filter !== 'none' ? filter : ''} brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)` }}
                              />
